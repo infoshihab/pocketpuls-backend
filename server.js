@@ -9,49 +9,53 @@ import userRouter from "./routes/userRoutes.js";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8000;
 
 // MongoDB connection
 mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
+  .catch((err) => console.error(err));
 
+// ✅ Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:5173",
-  //"https://pocketpulse-vrkx.onrender.com",
+  "http://ec2-65-2-63-162.ap-south-1.compute.amazonaws.com",
   "https://www.pocketpuls.com",
   "https://pocketpuls.com",
-  //"https://pocketpulse-1.onrender.com",
-  "https://api.pocketpuls.com",
 ];
 
+// ✅ CORS (FIXED)
 app.use(
   cors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
+        callback(null, true);
       } else {
-        console.log("Blocked by CORS:", origin);
-        return callback(new Error("Not allowed by CORS"));
+        console.error("Blocked by CORS:", origin);
+        callback(new Error("Not allowed by CORS"));
       }
     },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
+
+// ✅ Handle preflight explicitly (VERY IMPORTANT)
+app.options("*", cors());
 
 app.use(express.json());
 
 // API routes
 app.use("/api/user", userRouter);
 
-// Test route
+// Health check
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend works!" });
 });
 
 // Start server
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
 });
