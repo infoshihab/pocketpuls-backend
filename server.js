@@ -20,7 +20,7 @@ mongoose
 // ✅ Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:5173",
-  "http://ec2-65-2-63-162.ap-south-1.compute.amazonaws.com",
+  "http://ec2-13-203-194-197.ap-south-1.compute.amazonaws.com",
   "https://www.pocketpuls.com",
   "https://pocketpuls.com",
 ];
